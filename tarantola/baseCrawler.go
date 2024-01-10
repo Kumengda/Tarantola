@@ -16,7 +16,7 @@ type BaseCrawler struct {
 	resChain    chan interface{}
 	ReturnFunc  func(i interface{})
 	HttpRequest *request.HttpRequest
-	crawlerName string
+	CrawlerName string
 }
 
 func (b *BaseCrawler) Init() {
@@ -35,5 +35,5 @@ func (b *BaseCrawler) GetResChan() chan interface{} {
 	return b.resChain
 }
 func (b *BaseCrawler) GetCrawlerName() string {
-	return b.crawlerName
+	return b.CrawlerName
 }
