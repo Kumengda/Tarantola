@@ -6,8 +6,7 @@ import (
 )
 
 func main() {
-	myCrawler := testCrawler.NewMyCrawler()
-
+	myCrawler := testCrawler.NewMyCrawler(tarantola.BaseOptions{})
 	t := tarantola.NewTarantola()
 
 	t.AddCrawler(myCrawler)

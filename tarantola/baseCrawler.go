@@ -1,6 +1,9 @@
 package tarantola
 
-import "github.com/Kumengda/Tarantola/request"
+import (
+	"github.com/Kumengda/Tarantola/request"
+	"net/http"
+)
 
 type BaseOptions struct {
 	Headers              map[string]interface{}
@@ -14,7 +17,6 @@ type BaseCrawler struct {
 	BaseOptions
 	BaseUrl     string
 	resChain    chan interface{}
-	ReturnFunc  func(i interface{})
 	HttpRequest *request.HttpRequest
 	CrawlerName string
 }
@@ -36,4 +38,8 @@ func (b *BaseCrawler) GetResChan() chan interface{} {
 }
 func (b *BaseCrawler) GetCrawlerName() string {
 	return b.CrawlerName
+}
+
+func (b *BaseCrawler) SetRetryFunc(retryFunc func(respData []byte, respHeader http.Header, err error) bool, maxRetry int) {
+	b.HttpRequest.SetRetryFunc(retryFunc, maxRetry)
 }
