@@ -41,5 +41,8 @@ func (b *BaseCrawler) GetCrawlerName() string {
 }
 
 func (b *BaseCrawler) SetRetryFunc(retryFunc func(respData []byte, respHeader http.Header, err error) bool, maxRetry int) {
+	if b.HttpRequest == nil {
+		b.HttpRequest = request.NewHttpRequest(b.Headers, b.ProxyUrl, b.Timeout, b.RandomWaitTimeoutMin, b.RandomWaitTimeoutMin)
+	}
 	b.HttpRequest.SetRetryFunc(retryFunc, maxRetry)
 }
