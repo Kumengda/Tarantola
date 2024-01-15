@@ -2,10 +2,10 @@ package tarantola
 
 type CrawlKit interface {
 	Crawl() error
-	CrawlErrorHandler(err error)
-	DataProcessErrorHandler(err error)
-	DataProcessorHandler(crawlRes interface{}) error
-	Init()
-	GetResChan() chan interface{}
-	GetCrawlerName() string
+	crawlErrorHandler(err error)
+	dataProcessErrorHandler(err error)
+	dataProcessHandler(crawlRes interface{}) error
+	init()
+	getResChan() chan interface{}
+	getCrawlerName() string
 }

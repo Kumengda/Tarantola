@@ -26,22 +26,22 @@ func (t *Tarantola) ClearCrawler() {
 func (t *Tarantola) MonoCrawl() {
 	var wg sync.WaitGroup
 	for _, c := range t.Crawlers {
-		c.Init()
-		resChan := c.GetResChan()
+		c.init()
+		resChan := c.getResChan()
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for res := range resChan {
-				err := c.DataProcessorHandler(res)
+				err := c.dataProcessHandler(res)
 				if err != nil {
-					c.DataProcessErrorHandler(err)
+					c.dataProcessErrorHandler(err)
 				}
 			}
 			return
 		}()
 		err := c.Crawl()
 		if err != nil {
-			c.CrawlErrorHandler(err)
+			c.crawlErrorHandler(err)
 		}
 		close(resChan)
 	}

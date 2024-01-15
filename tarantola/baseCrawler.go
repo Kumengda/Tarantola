@@ -15,13 +15,16 @@ type BaseOptions struct {
 
 type BaseCrawler struct {
 	BaseOptions
-	BaseUrl     string
-	resChain    chan interface{}
-	HttpRequest *request.HttpRequest
-	CrawlerName string
+	dataProcessFunc      func(crawlRes interface{}) error
+	dataProcessErrorFunc func(err error)
+	crawlErrorFunc       func(err error)
+	BaseUrl              string
+	resChain             chan interface{}
+	HttpRequest          *request.HttpRequest
+	CrawlerName          string
 }
 
-func (b *BaseCrawler) Init() {
+func (b *BaseCrawler) init() {
 	if b.resChain == nil {
 		b.resChain = make(chan interface{})
 	}
@@ -33,11 +36,28 @@ func (b *BaseCrawler) Init() {
 func (b *BaseCrawler) PushResult(res interface{}) {
 	b.resChain <- res
 }
-func (b *BaseCrawler) GetResChan() chan interface{} {
+func (b *BaseCrawler) getResChan() chan interface{} {
 	return b.resChain
 }
-func (b *BaseCrawler) GetCrawlerName() string {
+func (b *BaseCrawler) getCrawlerName() string {
 	return b.CrawlerName
+}
+
+func (b *BaseCrawler) dataProcessErrorHandler(err error) {
+	if b.dataProcessErrorFunc != nil {
+		b.dataProcessErrorFunc(err)
+	}
+}
+func (b *BaseCrawler) dataProcessHandler(crawlRes interface{}) error {
+	if b.dataProcessFunc != nil {
+		return b.dataProcessFunc(crawlRes)
+	}
+	return nil
+}
+func (b *BaseCrawler) crawlErrorHandler(err error) {
+	if b.crawlErrorFunc != nil {
+		b.crawlErrorFunc(err)
+	}
 }
 
 func (b *BaseCrawler) SetRetryFunc(retryFunc func(respData []byte, respHeader http.Header, err error) bool, maxRetry int) {
@@ -45,4 +65,13 @@ func (b *BaseCrawler) SetRetryFunc(retryFunc func(respData []byte, respHeader ht
 		b.HttpRequest = request.NewHttpRequest(b.Headers, b.ProxyUrl, b.Timeout, b.RandomWaitTimeoutMin, b.RandomWaitTimeoutMin)
 	}
 	b.HttpRequest.SetRetryFunc(retryFunc, maxRetry)
+}
+func (b *BaseCrawler) SetCrawlErrorHandler(crawlErrorFunc func(err error)) {
+	b.crawlErrorFunc = crawlErrorFunc
+}
+func (b *BaseCrawler) SetDataProcessErrorHandler(dataProcessErrorFunc func(err error)) {
+	b.dataProcessErrorFunc = dataProcessErrorFunc
+}
+func (b *BaseCrawler) SetDataProcessFunc(dataProcessFunc func(crawlRes interface{}) error) {
+	b.dataProcessFunc = dataProcessFunc
 }

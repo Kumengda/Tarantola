@@ -1,12 +1,17 @@
 package testCrawler
 
 import (
-	"fmt"
 	"github.com/Kumengda/Tarantola/tarantola"
 )
 
 type MyCrawler struct {
 	tarantola.BaseCrawler
+}
+
+func (m *MyCrawler) Crawl() error {
+
+	//TODO implement me
+	panic("implement me")
 }
 
 func NewMyCrawler(options tarantola.BaseOptions) *MyCrawler {
@@ -15,21 +20,4 @@ func NewMyCrawler(options tarantola.BaseOptions) *MyCrawler {
 			BaseOptions: options,
 		},
 	}
-}
-
-func (m *MyCrawler) Crawl() error {
-	return nil
-}
-
-func (m *MyCrawler) CrawlErrorHandler(err error) {
-
-}
-func (m *MyCrawler) DataProcessErrorHandler(err error) {
-
-}
-
-func (m *MyCrawler) DataProcessorHandler(crawlRes interface{}) error {
-	fmt.Println("模拟数据接收")
-	fmt.Println(crawlRes)
-	return nil
 }
