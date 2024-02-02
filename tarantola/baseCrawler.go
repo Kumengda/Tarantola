@@ -2,6 +2,7 @@ package tarantola
 
 import (
 	"github.com/Kumengda/Tarantola/request"
+	"github.com/robertkrimen/otto"
 	"net/http"
 )
 
@@ -21,6 +22,7 @@ type BaseCrawler struct {
 	BaseUrl              string
 	resChain             chan interface{}
 	HttpRequest          *request.HttpRequest
+	JsExec               *otto.Otto
 	CrawlerName          string
 }
 
@@ -30,6 +32,9 @@ func (b *BaseCrawler) init() {
 	}
 	if b.HttpRequest == nil {
 		b.HttpRequest = request.NewHttpRequest(b.Headers, b.ProxyUrl, b.Timeout, b.RandomWaitTimeoutMin, b.RandomWaitTimeoutMin)
+	}
+	if b.JsExec == nil {
+		b.JsExec = otto.New()
 	}
 }
 

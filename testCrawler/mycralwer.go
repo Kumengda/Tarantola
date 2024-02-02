@@ -9,8 +9,8 @@ type MyCrawler struct {
 }
 
 func (m *MyCrawler) Crawl() error {
-
 	//TODO implement me
+
 	panic("implement me")
 }
 
