@@ -2,6 +2,8 @@ package tarantola
 
 import (
 	"github.com/Kumengda/Tarantola/request"
+	"github.com/Kumengda/easyChromedp/chrome"
+	"github.com/chromedp/chromedp"
 	"github.com/robertkrimen/otto"
 	"net/http"
 )
@@ -16,14 +18,15 @@ type BaseOptions struct {
 
 type BaseCrawler struct {
 	BaseOptions
-	dataProcessFunc      func(crawlRes interface{}) error
-	dataProcessErrorFunc func(err error)
-	crawlErrorFunc       func(err error)
-	BaseUrl              string
-	resChain             chan interface{}
-	HttpRequest          *request.HttpRequest
-	JsExec               *otto.Otto
-	CrawlerName          string
+	dataProcessFunc        func(crawlRes interface{}) error
+	dataProcessErrorFunc   func(err error)
+	crawlErrorFunc         func(err error)
+	BaseUrl                string
+	resChain               chan interface{}
+	HttpRequest            *request.HttpRequest
+	JsExec                 *otto.Otto
+	CrawlerName            string
+	chromeJsExecuteTimeout int
 }
 
 func (b *BaseCrawler) init() {
@@ -36,6 +39,29 @@ func (b *BaseCrawler) init() {
 	if b.JsExec == nil {
 		b.JsExec = otto.New()
 	}
+	b.chromeJsExecuteTimeout = 10
+}
+func (b *BaseCrawler) SetChromeJsExecuteTimeout(timeout int) {
+	b.chromeJsExecuteTimeout = timeout
+}
+func (b *BaseCrawler) ExecJsWithChrome(jsCode string) (interface{}, error) {
+	myChrome, err := chrome.NewChromeWithTimout(
+		b.chromeJsExecuteTimeout,
+	)
+	if err != nil {
+		myChrome.Close()
+		return nil, err
+	}
+
+	var result interface{}
+	err = myChrome.RunWithOutListen(
+		chromedp.Evaluate(jsCode, &result),
+	)
+	if err != nil {
+		return nil, err
+	}
+	myChrome.Close()
+	return result, nil
 }
 
 func (b *BaseCrawler) PushResult(res interface{}) {
