@@ -48,8 +48,12 @@ func (b *BaseCrawler) ExecJsWithChrome(jsCode string) (interface{}, error) {
 	myChrome, err := chrome.NewChromeWithTimout(
 		b.chromeJsExecuteTimeout,
 	)
+	defer func() {
+		if myChrome != nil {
+			myChrome.Close()
+		}
+	}()
 	if err != nil {
-		myChrome.Close()
 		return nil, err
 	}
 
@@ -60,7 +64,6 @@ func (b *BaseCrawler) ExecJsWithChrome(jsCode string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	myChrome.Close()
 	return result, nil
 }
 
