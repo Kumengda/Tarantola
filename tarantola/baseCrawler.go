@@ -34,7 +34,7 @@ func (b *BaseCrawler) init() {
 		b.resChain = make(chan interface{})
 	}
 	if b.HttpRequest == nil {
-		b.HttpRequest = request.NewHttpRequest(b.Headers, b.ProxyUrl, b.Timeout, b.RandomWaitTimeoutMin, b.RandomWaitTimeoutMin)
+		b.HttpRequest = request.NewHttpRequest(b.Headers, b.ProxyUrl, b.Timeout, b.RandomWaitTimeoutMin, b.RandomWaitTimeoutMax)
 	}
 	if b.JsExec == nil {
 		b.JsExec = otto.New()

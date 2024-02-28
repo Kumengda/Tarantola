@@ -12,7 +12,7 @@ require (
 
 require (
 	github.com/B9O2/NStruct v0.0.3 // indirect
-	github.com/Kumengda/easyChromedp v0.1.8 // indirect
+	github.com/Kumengda/easyChromedp v0.1.9 // indirect
 	github.com/chromedp/cdproto v0.0.0-20240214232516-ad4608604e9e // indirect
 	github.com/chromedp/chromedp v0.9.5 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
