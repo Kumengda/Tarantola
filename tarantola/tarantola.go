@@ -32,7 +32,7 @@ func (t *Tarantola) MonoCrawl() {
 		go func() {
 			defer wg.Done()
 			for res := range resChan {
-				err := c.dataProcessHandler(res)
+				err := c.dataProcessHandler(res, c.getHttpRequest())
 				if err != nil {
 					c.dataProcessErrorHandler(err)
 				}

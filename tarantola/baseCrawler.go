@@ -18,7 +18,7 @@ type BaseOptions struct {
 
 type BaseCrawler struct {
 	BaseOptions
-	dataProcessFunc        func(crawlRes interface{}) error
+	dataProcessFunc        func(crawlRes interface{}, httpRequest *request.HttpRequest) error
 	dataProcessErrorFunc   func(err error)
 	crawlErrorFunc         func(err error)
 	BaseUrl                string
@@ -73,6 +73,9 @@ func (b *BaseCrawler) PushResult(res interface{}) {
 func (b *BaseCrawler) getResChan() chan interface{} {
 	return b.resChain
 }
+func (b *BaseCrawler) getHttpRequest() *request.HttpRequest {
+	return b.HttpRequest
+}
 func (b *BaseCrawler) getCrawlerName() string {
 	return b.CrawlerName
 }
@@ -82,9 +85,9 @@ func (b *BaseCrawler) dataProcessErrorHandler(err error) {
 		b.dataProcessErrorFunc(err)
 	}
 }
-func (b *BaseCrawler) dataProcessHandler(crawlRes interface{}) error {
+func (b *BaseCrawler) dataProcessHandler(crawlRes interface{}, httpRequest *request.HttpRequest) error {
 	if b.dataProcessFunc != nil {
-		return b.dataProcessFunc(crawlRes)
+		return b.dataProcessFunc(crawlRes, httpRequest)
 	}
 	return nil
 }
@@ -106,6 +109,6 @@ func (b *BaseCrawler) SetCrawlErrorHandler(crawlErrorFunc func(err error)) {
 func (b *BaseCrawler) SetDataProcessErrorHandler(dataProcessErrorFunc func(err error)) {
 	b.dataProcessErrorFunc = dataProcessErrorFunc
 }
-func (b *BaseCrawler) SetDataProcessFunc(dataProcessFunc func(crawlRes interface{}) error) {
+func (b *BaseCrawler) SetDataProcessFunc(dataProcessFunc func(crawlRes interface{}, httpRequest *request.HttpRequest) error) {
 	b.dataProcessFunc = dataProcessFunc
 }
