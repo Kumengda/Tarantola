@@ -1,6 +1,8 @@
 package tarantola
 
 import (
+	"errors"
+	"fmt"
 	. "github.com/Kumengda/Tarantola/runtime"
 	"sync"
 )
@@ -28,6 +30,8 @@ func (t *Tarantola) MonoCrawl() (finalRes []interface{}, err error) {
 		if r := recover(); r != nil {
 			if _, ok := r.(error); ok {
 				err = r.(error)
+			} else {
+				err = errors.New(fmt.Sprint(r))
 			}
 		}
 	}()
