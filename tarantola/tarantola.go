@@ -23,7 +23,14 @@ func (t *Tarantola) ClearCrawler() {
 	t.Crawlers = nil
 }
 
-func (t *Tarantola) MonoCrawl() {
+func (t *Tarantola) MonoCrawl() (finalRes []interface{}, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(error); ok {
+				err = r.(error)
+			}
+		}
+	}()
 	var wg sync.WaitGroup
 	for _, c := range t.Crawlers {
 		c.init()
@@ -32,6 +39,7 @@ func (t *Tarantola) MonoCrawl() {
 		go func() {
 			defer wg.Done()
 			for res := range resChan {
+				finalRes = append(finalRes, res)
 				err := c.dataProcessHandler(res, c.getHttpRequest())
 				if err != nil {
 					c.dataProcessErrorHandler(err)
@@ -46,6 +54,7 @@ func (t *Tarantola) MonoCrawl() {
 		close(resChan)
 	}
 	wg.Wait()
+	return finalRes, err
 }
 
 func (t *Tarantola) MultiCrawl() error {
