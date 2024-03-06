@@ -1,6 +1,8 @@
 package tarantola
 
 import (
+	"errors"
+	"fmt"
 	"github.com/Kumengda/Tarantola/request"
 	"github.com/Kumengda/easyChromedp/chrome"
 	"github.com/chromedp/chromedp"
@@ -85,7 +87,16 @@ func (b *BaseCrawler) dataProcessErrorHandler(err error) {
 		b.dataProcessErrorFunc(err)
 	}
 }
-func (b *BaseCrawler) dataProcessHandler(crawlRes interface{}, httpRequest *request.HttpRequest) error {
+func (b *BaseCrawler) dataProcessHandler(crawlRes interface{}, httpRequest *request.HttpRequest) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(error); ok {
+				err = r.(error)
+			} else {
+				err = errors.New(fmt.Sprint(r))
+			}
+		}
+	}()
 	if b.dataProcessFunc != nil {
 		return b.dataProcessFunc(crawlRes, httpRequest)
 	}
