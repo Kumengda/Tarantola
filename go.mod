@@ -11,7 +11,8 @@ require (
 )
 
 require (
-	github.com/B9O2/NStruct v0.0.3 // indirect
+	github.com/B9O2/Multitasking v0.6.6 // indirect
+	github.com/B9O2/NStruct v0.0.5 // indirect
 	github.com/Kumengda/easyChromedp v0.1.9 // indirect
 	github.com/chromedp/cdproto v0.0.0-20240214232516-ad4608604e9e // indirect
 	github.com/chromedp/chromedp v0.9.5 // indirect
@@ -24,6 +25,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/robertkrimen/otto v0.3.0 // indirect
+	github.com/smallnest/chanx v1.2.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

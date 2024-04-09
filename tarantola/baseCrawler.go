@@ -3,6 +3,7 @@ package tarantola
 import (
 	"errors"
 	"fmt"
+	"github.com/B9O2/Multitasking"
 	"github.com/Kumengda/Tarantola/request"
 	"github.com/Kumengda/easyChromedp/chrome"
 	"github.com/chromedp/chromedp"
@@ -29,6 +30,7 @@ type BaseCrawler struct {
 	JsExec                 *otto.Otto
 	CrawlerName            string
 	chromeJsExecuteTimeout int
+	middleware             Multitasking.Middleware
 }
 
 func (b *BaseCrawler) init() {
@@ -71,6 +73,12 @@ func (b *BaseCrawler) ExecJsWithChrome(jsCode string) (interface{}, error) {
 
 func (b *BaseCrawler) PushResult(res interface{}) {
 	b.resChain <- res
+}
+func (b *BaseCrawler) SetMiddleware(middleware Multitasking.Middleware) {
+	b.middleware = middleware
+}
+func (b *BaseCrawler) getMiddleware() Multitasking.Middleware {
+	return b.middleware
 }
 func (b *BaseCrawler) getResChan() chan interface{} {
 	return b.resChain

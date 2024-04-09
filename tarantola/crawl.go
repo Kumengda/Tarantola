@@ -1,6 +1,9 @@
 package tarantola
 
-import "github.com/Kumengda/Tarantola/request"
+import (
+	"github.com/B9O2/Multitasking"
+	"github.com/Kumengda/Tarantola/request"
+)
 
 type CrawlKit interface {
 	Crawl() error
@@ -9,6 +12,7 @@ type CrawlKit interface {
 	dataProcessHandler(crawlRes interface{}, request *request.HttpRequest) error
 	init()
 	getResChan() chan interface{}
+	getMiddleware() Multitasking.Middleware
 	getHttpRequest() *request.HttpRequest
 	getCrawlerName() string
 }

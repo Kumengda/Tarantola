@@ -9,7 +9,5 @@ func main() {
 	myCrawler := testCrawler.NewMyCrawler(tarantola.BaseOptions{})
 	t := tarantola.NewTarantola()
 	t.AddCrawler(myCrawler)
-
-	t.MonoCrawl()
-
+	t.MonoCrawl(1)
 }
