@@ -6,7 +6,6 @@ require (
 	github.com/B9O2/Inspector v0.0.12
 	github.com/corpix/uarand v0.2.0
 	github.com/satori/go.uuid v1.2.0
-	gitlab.huaun.com/lz-engine/tianyanchaspider v0.0.7
 	golang.org/x/net v0.20.0
 )
 
