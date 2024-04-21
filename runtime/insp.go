@@ -59,7 +59,8 @@ var (
 	LEVEL_DEBUG   = Level("DEBUG", decorators.Cyan)
 )
 
-func InitDecoration() {
+func InitDecoration(debug bool) {
+	MainInsp.SetVisible(debug)
 	MainInsp.SetTypeDecorations("_start", decorators.Yellow)
 	MainInsp.SetTypeDecorations("_func", decorators.Magenta, decorators.Invisible)
 	MainInsp.SetOrders("_time", Level, "_func", Text, FatalError)

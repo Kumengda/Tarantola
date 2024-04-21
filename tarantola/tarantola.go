@@ -12,8 +12,12 @@ type Tarantola struct {
 }
 
 func NewTarantola() *Tarantola {
-	InitDecoration()
+	InitDecoration(false)
 	return &Tarantola{}
+}
+
+func (t *Tarantola) EnableDebugMod() {
+	InitDecoration(true)
 }
 
 func (t *Tarantola) AddCrawler(Crawlers ...CrawlKit) {
