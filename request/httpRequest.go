@@ -31,12 +31,14 @@ func NewHttpRequest(headers map[string]interface{}, proxyUrl string, timeout, ra
 		proxy, err := url2.Parse(proxyUrl)
 		if err == nil {
 			client.Transport = &http.Transport{
-				Proxy: http.ProxyURL(proxy),
+				Proxy:           http.ProxyURL(proxy),
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
 		}
-	}
-	client.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	} else {
+		client.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
 	}
 	return &HttpRequest{
 		client:               client,

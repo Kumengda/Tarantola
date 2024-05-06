@@ -11,7 +11,7 @@ type MyCrawler struct {
 
 func (m *MyCrawler) Crawl() error {
 	for {
-		m.PushResult("111")
+		m.HttpRequest.Get("https://google.com")
 		time.Sleep(1 * time.Second)
 	}
 
