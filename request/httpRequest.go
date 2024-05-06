@@ -17,18 +17,30 @@ import (
 
 type HttpRequest struct {
 	headers              map[string]interface{}
-	proxyUrl             string
 	timeout              int
 	randomWaitTimeoutMin int
 	randomWaitTimeoutMax int
 	maxRetry             int
 	retryFunc            func(respData []byte, respHeader http.Header, err error) bool
+	client               *http.Client
 }
 
 func NewHttpRequest(headers map[string]interface{}, proxyUrl string, timeout, randomWaitTimeoutMin, randomWaitTimeoutMax int) *HttpRequest {
+	client := &http.Client{Timeout: time.Duration(timeout) * time.Second}
+	if proxyUrl != "" {
+		proxy, err := url2.Parse(proxyUrl)
+		if err == nil {
+			client.Transport = &http.Transport{
+				Proxy: http.ProxyURL(proxy),
+			}
+		}
+	}
+	client.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	return &HttpRequest{
+		client:               client,
 		headers:              headers,
-		proxyUrl:             proxyUrl,
 		timeout:              timeout,
 		randomWaitTimeoutMin: randomWaitTimeoutMin,
 		randomWaitTimeoutMax: randomWaitTimeoutMax,
@@ -40,22 +52,6 @@ func (r *HttpRequest) SetRetryFunc(retryFunc func(respData []byte, respHeader ht
 }
 
 func (r *HttpRequest) postJson(url string, jsonData interface{}) ([]byte, http.Header, error) {
-	client := &http.Client{Timeout: time.Duration(r.timeout) * time.Second}
-	if r.proxyUrl != "" {
-		proxy, err := url2.Parse(r.proxyUrl)
-		if err == nil {
-			client.Transport = &http.Transport{
-				Proxy: http.ProxyURL(proxy),
-			}
-		} else {
-			return nil, nil, err
-		}
-
-	}
-
-	client.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 	jsonBody, err := json.Marshal(jsonData)
 	if err != nil {
 		return nil, nil, err
@@ -70,7 +66,7 @@ func (r *HttpRequest) postJson(url string, jsonData interface{}) ([]byte, http.H
 	req.Header.Set("Content-Type", "application/json")
 	sleepTime := utils.RandomNum(r.randomWaitTimeoutMax, r.randomWaitTimeoutMin)
 	MainInsp.Print(LEVEL_INFO, Text(fmt.Sprintf("GET Method Random sleep %ds", sleepTime)))
-	resp, err := client.Do(req)
+	resp, err := r.client.Do(req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -88,31 +84,12 @@ func (r *HttpRequest) postJson(url string, jsonData interface{}) ([]byte, http.H
 	return data, resp.Header, nil
 }
 func (r *HttpRequest) get(url string) ([]byte, http.Header, error) {
-	client := &http.Client{
-		Timeout: time.Duration(r.timeout) * time.Second,
-	}
-	client.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
-	if r.proxyUrl != "" {
-		proxy, err := url2.Parse(r.proxyUrl)
-		if err == nil {
-			client.Transport = &http.Transport{
-				Proxy: http.ProxyURL(proxy),
-			}
-		} else {
-			return nil, nil, err
-		}
-
-	}
-
 	req, _ := http.NewRequest("GET", url, nil)
 	for k, v := range r.headers {
 		req.Header.Set(k, v.(string))
 	}
 	req.Header.Set("User-Agent", uarand.GetRandom())
-	resp, err := client.Do(req)
+	resp, err := r.client.Do(req)
 	sleepTime := utils.RandomNum(r.randomWaitTimeoutMax, r.randomWaitTimeoutMin)
 	MainInsp.Print(LEVEL_INFO, Text(fmt.Sprintf("GET Method Random sleep %ds", sleepTime)))
 	if err != nil {
@@ -128,7 +105,6 @@ func (r *HttpRequest) get(url string) ([]byte, http.Header, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	client.CloseIdleConnections()
 	time.Sleep(time.Duration(sleepTime) * time.Second)
 	return data, nil, nil
 }
