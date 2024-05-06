@@ -34,15 +34,9 @@ type BaseCrawler struct {
 }
 
 func (b *BaseCrawler) init() {
-	if b.resChain == nil {
-		b.resChain = make(chan interface{})
-	}
-	if b.HttpRequest == nil {
-		b.HttpRequest = request.NewHttpRequest(b.Headers, b.ProxyUrl, b.Timeout, b.RandomWaitTimeoutMin, b.RandomWaitTimeoutMax)
-	}
-	if b.JsExec == nil {
-		b.JsExec = otto.New()
-	}
+	b.resChain = make(chan interface{})
+	b.HttpRequest = request.NewHttpRequest(b.Headers, b.ProxyUrl, b.Timeout, b.RandomWaitTimeoutMin, b.RandomWaitTimeoutMax)
+	b.JsExec = otto.New()
 	b.chromeJsExecuteTimeout = 10
 }
 func (b *BaseCrawler) SetChromeJsExecuteTimeout(timeout int) {
