@@ -128,6 +128,7 @@ func (r *HttpRequest) get(url string) ([]byte, http.Header, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	client.CloseIdleConnections()
 	time.Sleep(time.Duration(sleepTime) * time.Second)
 	return data, nil, nil
 }
