@@ -10,6 +10,7 @@ import (
 	"github.com/corpix/uarand"
 	"golang.org/x/net/html/charset"
 	"io"
+	"mime"
 	"net/http"
 	url2 "net/url"
 	"time"
@@ -85,35 +86,48 @@ func (r *HttpRequest) postJson(url string, jsonData interface{}) ([]byte, http.H
 	time.Sleep(time.Duration(sleepTime) * time.Second)
 	return data, resp.Header, nil
 }
+
 func (r *HttpRequest) get(url string) ([]byte, http.Header, error) {
-	req, _ := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create request: %w", err)
+	}
 	for k, v := range r.headers {
 		req.Header.Set(k, v.(string))
 	}
 	req.Header.Set("User-Agent", uarand.GetRandom())
+
 	resp, err := r.client.Do(req)
-	sleepTime := utils.RandomNum(r.randomWaitTimeoutMax, r.randomWaitTimeoutMin)
-	MainInsp.Print(LEVEL_INFO, Text(fmt.Sprintf("GET Method Random sleep %ds", sleepTime)))
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("request error: %w", err)
 	}
 	defer resp.Body.Close()
-	CT := resp.Header.Get("Content-Type")
-	if CT == "" {
-		CT = "utf-8"
-	}
-	bodyReader, err := charset.NewReader(resp.Body, CT)
-	if err != nil {
-		return nil, nil, err
+	sleepSec := utils.RandomNum(r.randomWaitTimeoutMax, r.randomWaitTimeoutMin)
+	time.Sleep(time.Duration(sleepSec) * time.Second)
+
+	ct := resp.Header.Get("Content-Type")
+	var reader io.Reader = resp.Body
+	if ct != "" {
+		if _, params, err := mime.ParseMediaType(ct); err == nil {
+			if cs, ok := params["charset"]; ok {
+				if convReader, err := charset.NewReaderLabel(cs, resp.Body); err == nil {
+					reader = convReader
+				}
+			}
+		}
+	} else {
+		if convReader, err := charset.NewReaderLabel("utf-8", resp.Body); err == nil {
+			reader = convReader
+		}
 	}
 
-	data, err := io.ReadAll(bodyReader)
+	data, err := io.ReadAll(reader)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("read body error: %w", err)
 	}
-	time.Sleep(time.Duration(sleepTime) * time.Second)
-	return data, nil, nil
+	return data, resp.Header, nil
 }
+
 func (r *HttpRequest) Get(url string) ([]byte, error) {
 	var respData []byte
 	var respHeader http.Header
