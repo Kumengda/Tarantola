@@ -74,7 +74,7 @@ func (r *HttpRequest) postJson(url string, jsonData interface{}) ([]byte, http.H
 		return nil, nil, err
 	}
 	defer resp.Body.Close()
-	bodyReader, err := charset.NewReader(resp.Body, resp.Header.Get("Content-Type"))
+	bodyReader, err := charset.NewReaderLabel("utf-8", resp.Body)
 	if err != nil {
 		return nil, nil, err
 	}
