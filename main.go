@@ -7,10 +7,8 @@ import (
 )
 
 func main() {
-	myCrawler := testCrawler.NewMyCrawler(tarantola.BaseOptions{
-		Timeout:  10,
-		ProxyUrl: "http://127.0.0.1:7890",
-	})
+	myCrawler := testCrawler.NewMyCrawler(tarantola.BaseOptions{})
+
 	t := tarantola.NewTarantola()
 	t.AddCrawler(myCrawler)
 	MainInsp.Print(LEVEL_INFO, Text("asda"))

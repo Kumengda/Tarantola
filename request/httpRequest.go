@@ -98,7 +98,11 @@ func (r *HttpRequest) get(url string) ([]byte, http.Header, error) {
 		return nil, nil, err
 	}
 	defer resp.Body.Close()
-	bodyReader, err := charset.NewReader(resp.Body, resp.Header.Get("Content-Type"))
+	CT := resp.Header.Get("Content-Type")
+	if CT == "" {
+		CT = "utf-8"
+	}
+	bodyReader, err := charset.NewReader(resp.Body, CT)
 	if err != nil {
 		return nil, nil, err
 	}

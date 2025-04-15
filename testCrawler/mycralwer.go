@@ -2,7 +2,6 @@ package testCrawler
 
 import (
 	"github.com/Kumengda/Tarantola/tarantola"
-	"time"
 )
 
 type MyCrawler struct {
@@ -10,11 +9,6 @@ type MyCrawler struct {
 }
 
 func (m *MyCrawler) Crawl() error {
-	for {
-		m.HttpRequest.Get("https://google.com")
-		time.Sleep(1 * time.Second)
-	}
-
 	return nil
 }
 
